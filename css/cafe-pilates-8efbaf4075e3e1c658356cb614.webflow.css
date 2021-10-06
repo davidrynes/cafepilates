@@ -692,7 +692,7 @@ p {
 }
 
 .text--copy.is--hidden {
-  display: none;
+  display: block;
 }
 
 .copy-wrapper {
