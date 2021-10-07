@@ -1225,6 +1225,10 @@ p {
   .cookie--text-copy {
     width: 30ch;
   }
+
+  .facebook--chat--embed {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 479px) {
