@@ -893,6 +893,7 @@ p {
 }
 
 .section--content--wrapper.is--formular {
+  max-width: 1160px;
   margin-top: 0rem;
   margin-bottom: 1rem;
 }
