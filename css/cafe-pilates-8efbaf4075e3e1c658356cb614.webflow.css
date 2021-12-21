@@ -892,6 +892,11 @@ p {
   margin-top: 0rem;
 }
 
+.section--content--wrapper.is--formular {
+  margin-top: 0rem;
+  margin-bottom: 1rem;
+}
+
 .bold-text {
   font-size: 1.6rem;
 }
