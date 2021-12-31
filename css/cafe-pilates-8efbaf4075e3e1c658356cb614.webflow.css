@@ -768,6 +768,10 @@ p {
   font-family: Montserrat, sans-serif;
 }
 
+.footer--text.is--right {
+  text-align: right;
+}
+
 .footer--link {
   display: -webkit-box;
   display: -webkit-flex;
