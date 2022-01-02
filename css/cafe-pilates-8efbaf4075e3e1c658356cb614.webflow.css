@@ -943,10 +943,7 @@ p {
   right: 0%;
   bottom: 0%;
   z-index: 99999;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
+  display: none;
   width: 90%;
   max-width: 1120px;
   margin-right: auto;
@@ -1040,10 +1037,7 @@ p {
   right: 0%;
   bottom: auto;
   z-index: 99999;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
+  display: none;
   width: 100%;
   margin-top: 0rem;
   margin-right: auto;
