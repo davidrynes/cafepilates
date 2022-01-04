@@ -1347,6 +1347,31 @@ p {
   object-fit: cover;
 }
 
+.section--tv--wrapper {
+  width: 100%;
+  height: 100vh;
+}
+
+.slider--tv {
+  width: 100%;
+  height: 100%;
+}
+
+.right-arrow-2 {
+  display: none;
+  font-size: 0px;
+}
+
+.left-arrow-2 {
+  display: none;
+  font-size: 0px;
+}
+
+.slide-nav {
+  display: none;
+  font-size: 0px;
+}
+
 @media screen and (max-width: 991px) {
   .heading--h1.is--not--main {
     font-size: 2.8rem;
