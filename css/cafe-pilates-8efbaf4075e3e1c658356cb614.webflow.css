@@ -1372,6 +1372,12 @@ p {
   font-size: 0px;
 }
 
+.button-2 {
+  background-color: #2d4f4e;
+  font-family: Montserrat, sans-serif;
+  font-weight: 600;
+}
+
 @media screen and (max-width: 991px) {
   .heading--h1.is--not--main {
     font-size: 2.8rem;
