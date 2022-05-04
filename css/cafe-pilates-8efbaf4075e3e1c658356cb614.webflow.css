@@ -264,6 +264,7 @@ p {
 .image--main {
   position: relative;
   z-index: 1;
+  overflow: visible;
   width: 100%;
   -o-object-fit: cover;
   object-fit: cover;
@@ -323,6 +324,11 @@ p {
   height: 100%;
 }
 
+.content--image--wrapper.is-oslava {
+  overflow: visible;
+  max-height: none;
+}
+
 .content--text--container {
   width: 50%;
   margin-left: 3em;
@@ -344,6 +350,7 @@ p {
   font-family: 'Playfair Display', sans-serif;
   font-size: 3.2em;
   line-height: 1.2;
+  text-align: left;
   text-transform: uppercase;
 }
 
