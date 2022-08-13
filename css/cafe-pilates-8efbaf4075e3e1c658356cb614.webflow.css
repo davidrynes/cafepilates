@@ -1385,6 +1385,11 @@ p {
   font-weight: 600;
 }
 
+.is-image-50 {
+  width: 50%;
+  margin-bottom: 1rem;
+}
+
 @media screen and (max-width: 991px) {
   .heading--h1.is--not--main {
     font-size: 2.8rem;
