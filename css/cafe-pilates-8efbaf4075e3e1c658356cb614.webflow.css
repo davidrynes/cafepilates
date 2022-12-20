@@ -1391,6 +1391,137 @@ p {
   margin-bottom: 1rem;
 }
 
+.btn--zavrit {
+  display: inline-block;
+  margin-right: 1.5em;
+  padding: 1.4em;
+  border: 1px solid #000;
+  -webkit-transition: all 200ms ease-in-out;
+  transition: all 200ms ease-in-out;
+  font-size: 0.8em;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.btn--zavrit:hover {
+  background-color: #2d4f4e;
+  color: #f8f5f5;
+}
+
+.btn--zavrit.is--link {
+  -webkit-transition-property: all;
+  transition-property: all;
+}
+
+.btn--zavrit.is--link:hover {
+  background-color: #2d4f4e;
+  color: #fff;
+}
+
+.popup--image {
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+.paragraph-3 {
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.paragraph-3.popup {
+  margin-bottom: 1.5em;
+}
+
+.popup--head {
+  margin-bottom: 1.5em;
+  font-family: 'Panchang variable', sans-serif;
+  font-size: 1.6em;
+}
+
+.popup--container {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 90%;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  grid-auto-columns: 1fr;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  -ms-grid-rows: auto;
+  grid-template-rows: auto;
+  background-color: #fafafa;
+}
+
+.popup--col--1 {
+  width: 100%;
+  padding: 3em;
+}
+
+.popup--wrapper--husa {
+  position: fixed;
+  z-index: 9999;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  -ms-grid-rows: auto auto;
+  grid-template-rows: auto auto;
+  background-color: rgba(0, 0, 0, 0.86);
+  color: #313132;
+}
+
+.popup--col--2 {
+  display: none;
+  width: 40%;
+  height: 100%;
+  min-height: auto;
+  margin-top: 3em;
+  margin-right: 3em;
+  margin-bottom: 3em;
+  -webkit-align-self: auto;
+  -ms-flex-item-align: auto;
+  -ms-grid-row-align: auto;
+  align-self: auto;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 auto;
+  -ms-flex: 0 auto;
+  flex: 0 auto;
+  box-shadow: 0 20px 20px -13px #1b3631;
+  -o-object-fit: fill;
+  object-fit: fill;
+}
+
 @media screen and (max-width: 991px) {
   .heading--h1.is--not--main {
     font-size: 2.8rem;
@@ -1503,6 +1634,30 @@ p {
   .gallery--grid--container {
     -ms-grid-columns: 1fr 1fr 1fr;
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .popup--container {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -ms-grid-columns: 1fr;
+    grid-template-columns: 1fr;
+  }
+
+  .popup--col--1 {
+    font-size: 0.8rem;
+  }
+
+  .popup--wrapper--husa {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .popup--col--2 {
+    width: 40%;
+    min-height: auto;
   }
 }
 
@@ -1685,6 +1840,43 @@ p {
   .gallery--grid--container {
     -ms-grid-columns: 1fr;
     grid-template-columns: 1fr;
+  }
+
+  .btn--zavrit {
+    font-size: 0.8em;
+  }
+
+  .paragraph-3.popup {
+    font-size: 0.8em;
+  }
+
+  .popup--head {
+    font-size: 1.2em;
+  }
+
+  .popup--container {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+
+  .popup--col--1 {
+    width: 100%;
+  }
+
+  .popup--wrapper--husa {
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+
+  .popup--col--2 {
+    display: none;
+    margin-top: 3rem;
+    margin-right: 0em;
   }
 }
 
@@ -1876,6 +2068,14 @@ p {
 
   .menu--icon {
     display: block;
+  }
+
+  .popup--container {
+    width: 100%;
+  }
+
+  .popup--col--1 {
+    padding: 1.5em;
   }
 }
 
