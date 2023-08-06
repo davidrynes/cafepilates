@@ -1042,6 +1042,7 @@ p {
 }
 
 .button-2.is-rozvrh {
+  text-transform: uppercase;
   margin-bottom: 20px;
   display: inline-block;
 }
