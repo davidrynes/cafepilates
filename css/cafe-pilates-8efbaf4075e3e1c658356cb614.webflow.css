@@ -313,6 +313,10 @@ p {
   margin-bottom: 3rem;
 }
 
+.heading--h2.no-pad {
+  margin-left: 0;
+}
+
 .heading--wrapper {
   flex-direction: row;
   align-items: flex-end;
@@ -454,8 +458,12 @@ p {
   margin-top: 0;
 }
 
-.section--content--container.is--gallery {
+.section--content--container.is--gallery, .section--content--container.full-w {
   width: 100%;
+}
+
+.section--content--container.full-w.is-v {
+  flex-flow: column;
 }
 
 .nav--wrapper {
@@ -908,9 +916,16 @@ p {
 .menu--nazev {
   flex-direction: column;
   flex: 1;
+  margin-right: 12px;
   font-family: Montserrat, sans-serif;
   font-weight: 700;
-  display: flex;
+  display: inline-block;
+}
+
+.menu--nazev.new {
+  color: #000;
+  background-color: #ffca56;
+  padding: 6px;
 }
 
 .menu--cena {
@@ -1239,6 +1254,41 @@ p {
   max-width: 560px;
   height: 100%;
   position: relative;
+}
+
+.text-span-3 {
+  display: inline-flex;
+}
+
+.anniv--container {
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  max-width: 860px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+}
+
+.anniv--image {
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  object-fit: cover;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.anniv--text {
+  width: 100%;
+}
+
+.is--list {
+  font-size: .8rem;
+  font-weight: 500;
+}
+
+.image {
+  height: 100%;
 }
 
 @media screen and (max-width: 991px) {
@@ -1698,6 +1748,10 @@ p {
 
   .menu-ico {
     width: 1.5rem;
+  }
+
+  .anniv--container {
+    flex-flow: column;
   }
 }
 
