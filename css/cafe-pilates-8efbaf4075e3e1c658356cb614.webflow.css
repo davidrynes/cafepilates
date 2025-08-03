@@ -1,3 +1,59 @@
+@font-face {
+  font-family: Panchang variable;
+  src: url('../fonts/Panchang-Variable.ttf') format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Panchang;
+  src: url('../fonts/Panchang-Extrabold.otf') format("opentype"), url('../fonts/Panchang-Bold.otf') format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Panchang;
+  src: url('../fonts/Panchang-Semibold.otf') format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Panchang;
+  src: url('../fonts/Panchang-Extralight.otf') format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Panchang;
+  src: url('../fonts/Panchang-Regular.otf') format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Panchang;
+  src: url('../fonts/Panchang-Medium.otf') format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Panchang;
+  src: url('../fonts/Panchang-Light.otf') format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #f8f5f5;
   --text: #2d4f4e;
@@ -1289,6 +1345,10 @@ p {
 
 .image {
   height: 100%;
+}
+
+.bold-text-3, .bold-text-4, .red {
+  color: var(--color);
 }
 
 @media screen and (max-width: 991px) {
