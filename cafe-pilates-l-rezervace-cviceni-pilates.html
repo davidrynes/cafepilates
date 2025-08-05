@@ -1,4 +1,4 @@
-<!DOCTYPE html><!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Sun Aug 03 2025 19:16:34 GMT+0000 (Coordinated Universal Time)  -->
+<!DOCTYPE html><!--  This site was created in Webflow. https://webflow.com  --><!--  Last Published: Mon Aug 04 2025 09:22:04 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="615ab7c49a091dd90b962f88" data-wf-site="6107b2fda6d5f83b06d8d618" lang="cs">
 <head>
   <meta charset="utf-8">
@@ -57,7 +57,13 @@
     <div class="section--content--container-iframe iframe">
       <div class="html--widget">
         <div class="widget--embed w-embed w-script">
-          <script type="text/javascript" src="https://bookeo.com/widget.js?a=42552ELM9K9198556A4979&agc=false"></script>
+          <script>
+            const script = document.createElement('script');
+            const timestamp = new Date().getTime(); // přidá časový parametr, aby šlo o "novou" verzi
+            script.type = 'text/javascript';
+            script.src = 'https://bookeo.com/widget.js?a=42552ELM9K9198556A4979&agc=false&nocache=' + timestamp;
+            document.body.appendChild(script);
+          </script>
         </div>
       </div>
     </div>
