@@ -1277,6 +1277,10 @@ p {
   font-weight: 700;
 }
 
+.menu-sep.sweet {
+  background-color: #a72744;
+}
+
 .paragraph-4 {
   margin-bottom: 0;
 }
