@@ -35,7 +35,7 @@ Adresy fungují i bez `.html` – Netlify servíruje `menu.html` i na `/menu`.
 
 ## Časté úpravy
 
-**Rozvrh** – jen v souboru `assets/js/rozvrh.js`. Každá lekce je jeden řádek; postup je popsaný na začátku souboru. Z těchto dat se vykresluje stránka Rozvrh i blok „Kdy cvičí“ u lektorek (přes `profil: "id-lektorky"`).
+**Rozvrh** – jen v souboru `assets/js/rozvrh.js`. Každá lekce je jeden řádek; postup je popsaný na začátku souboru. Z těchto dat se vykresluje rozvrh na stránce Rozvrh a ceník; `profil: "id-lektorky"` udělá ze jména odkaz na profil lektorky.
 
 **Oznámení nahoře** – v `index.html` blok `<div class="announce">…</div>`. Když není co oznamovat, celý blok smažte.
 

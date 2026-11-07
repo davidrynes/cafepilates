@@ -161,29 +161,6 @@
     vykresli();
   });
 
-  // Kdy cvičí: <div class="when" data-rozvrh-lektorka="helena" hidden><h4>…</h4><ul></ul></div>
-  each($$("[data-rozvrh-lektorka]"), function (box) {
-    var id = box.getAttribute("data-rozvrh-lektorka");
-    var lekce = rozvrh.filter(function (l) { return profily(l).indexOf(id) !== -1; }).sort(serad);
-    if (!lekce.length) return;
-    // seskupit po dnech: „Út  7:00 Reformer, 15:00 Pilates barre…“
-    var poDnech = {};
-    lekce.forEach(function (l) {
-      var ids = profily(l);
-      var nazev = l.lekce;
-      // u střídaného typu lekce („Chair / Reformer (fyzio)“) ukázat jen ten, který vede tahle lektorka
-      var typy = String(l.lekce).split(" / ");
-      if (typy.length === ids.length) nazev = typy[ids.indexOf(id)];
-      nazev = nazev.replace(" (authentic)", "");
-      var txt = esc(l.cas) + " " + esc(nazev) + (ids.length > 1 ? " <small>(střídavě)</small>" : "");
-      (poDnech[l.den] = poDnech[l.den] || []).push(txt);
-    });
-    $("ul", box).innerHTML = DNY.filter(function (d) { return poDnech[d]; }).map(function (d) {
-      return "<li><b>" + DNY_ZKR[d] + "</b><span>" + poDnech[d].join(", ") + "</span></li>";
-    }).join("");
-    box.hidden = false;
-  });
-
   /* --- Instruktorky: filtr podle typu lekce ----------------------------- */
   var filters = $(".filters--js");
   if (filters) {

@@ -1,6 +1,6 @@
 /*
   ROZVRH LEKCÍ — jediné místo, kde se rozvrh upravuje.
-  Z těchto dat se vykresluje stránka „Rozvrh a ceník“ i blok „Kdy cvičí“ u lektorek.
+  Z těchto dat se vykresluje rozvrh na stránce „Rozvrh a ceník“.
   Převzato z rezervačního systému Bookeo (týdny 26. 10. – 7. 11. 2026), bez soukromých hodin.
 
   Každá lekce je jeden řádek:
@@ -11,7 +11,7 @@
     lektorka  jméno, jak se má zobrazit; když se lektorky střídají: "Eva / Helena"
     profil    (nepovinné) id lektorky na stránce Instruktorky, např. "helena".
               Když se lektorky střídají, seznam ve stejném pořadí: ["eva", "helena"]
-              (null = lektorka bez profilu). Lekce se pak ukáže i v bloku „Kdy cvičí“.
+              (null = lektorka bez profilu). Jméno v rozvrhu pak odkazuje na její profil.
 
   Pozor na čárky: za každým řádkem kromě posledního musí být čárka.
 */
