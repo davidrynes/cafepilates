@@ -1,5 +1,4 @@
 User-agent: *
 Disallow: /obrazovka
-Disallow: /obrazovka-nova
 Disallow: /cafe-pilates-obrazovka
 Sitemap: https://www.cafepilates.cz/sitemap.xml

@@ -1,6 +1,7 @@
 # Netlify: trvalá přesměrování starých adres z Webflow na nové stránky.
 # „301!“ = přesměrovat, i když na staré adrese leží soubor (záložní přesměrovací stránky).
 # Stránky /obrazovka a /cafe-pilates-obrazovka se nepřesměrovávají.
+# Zkušební adresa /obrazovka-nova vede na /obrazovka (nová obrazovka je od 9. 11. 2026 hlavní).
 
 /cafe-pilates-l-jidelni-a-napojovy-listek                                                               /menu.html                                301!
 /cafe-pilates-l-jidelni-a-napojovy-listek.html                                                          /menu.html                                301!
@@ -20,3 +21,5 @@
 /cafe-pilates-l-bistro-lagoon-letnany.html                                                              /                                         301!
 /blog/cafe-pilates-l-elixir-prodlouzene-mladosti-ponorte-se-do-zazracneho-sveta-telesne-harmonie        /blog/elixir-prodlouzeneho-mladi.html     301!
 /blog/cafe-pilates-l-elixir-prodlouzene-mladosti-ponorte-se-do-zazracneho-sveta-telesne-harmonie.html   /blog/elixir-prodlouzeneho-mladi.html     301!
+/obrazovka-nova                                                                                         /obrazovka                                301!
+/obrazovka-nova.html                                                                                    /obrazovka                                301!
