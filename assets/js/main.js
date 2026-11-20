@@ -133,7 +133,7 @@
         (l.regularInstructor ? ' <span class="tt-sub">(záskok, obvykle ' + esc(l.regularInstructor) + ")</span>" : "");
       var plno = l.free <= 0;
       var meta = l.started ? "" :
-        '<span class="tt-meta"><span class="tt-free' + (plno ? " tt-free--full" : l.free <= 2 ? " tt-free--low" : "") + '">' +
+        '<span class="tt-meta"><span class="tt-free' + (plno ? " tt-free--full" : l.free === 1 || l.free / l.capacity <= 0.25 ? " tt-free--low" : "") + '">' +
           (plno ? "obsazeno" : mistaText(l.free)) + "</span> · " + cena(l.priceCzk) + "</span>";
       var akce = l.started
         ? '<span class="tt-done">Proběhla</span>'
