@@ -1,0 +1,113 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "redirects": [
+    {
+      "source": "/cafe-pilates-l-jidelni-a-napojovy-listek",
+      "destination": "/menu.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-jidelni-a-napojovy-listek.html",
+      "destination": "/menu.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-co-je-pilates-cviceni-a-pro-koho-je",
+      "destination": "/pilates.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-co-je-pilates-cviceni-a-pro-koho-je.html",
+      "destination": "/pilates.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-rezervace-cviceni-pilates",
+      "destination": "/rozvrh-a-cenik.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-rezervace-cviceni-pilates.html",
+      "destination": "/rozvrh-a-cenik.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-soukrome-oslavy-praha-letnany",
+      "destination": "/oslavy.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-soukrome-oslavy-praha-letnany.html",
+      "destination": "/oslavy.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-vernisaze-a-vystavy",
+      "destination": "/vystavy.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-vernisaze-a-vystavy.html",
+      "destination": "/vystavy.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-kde-jsme",
+      "destination": "/kontakt.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-kde-jsme.html",
+      "destination": "/kontakt.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-souhlas-se-zpracovanim-osobnich-udaju",
+      "destination": "/ochrana-osobnich-udaju.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-souhlas-se-zpracovanim-osobnich-udaju.html",
+      "destination": "/ochrana-osobnich-udaju.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-bistro-lagoon-letnany",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/cafe-pilates-l-bistro-lagoon-letnany.html",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/cafe-pilates-l-elixir-prodlouzene-mladosti-ponorte-se-do-zazracneho-sveta-telesne-harmonie",
+      "destination": "/blog/elixir-prodlouzeneho-mladi.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/cafe-pilates-l-elixir-prodlouzene-mladosti-ponorte-se-do-zazracneho-sveta-telesne-harmonie.html",
+      "destination": "/blog/elixir-prodlouzeneho-mladi.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/obrazovka-nova",
+      "destination": "/obrazovka",
+      "statusCode": 301
+    },
+    {
+      "source": "/obrazovka-nova.html",
+      "destination": "/obrazovka",
+      "statusCode": 301
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/:path*.html"
+    }
+  ]
+}
