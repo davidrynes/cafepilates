@@ -96,9 +96,9 @@
         </div>
         <div class="booking">
           <p class="booking__loading muted">Načítám rezervační systém… Pokud se nezobrazí, zavolejte nám na <a href="tel:+420608867232">+420&nbsp;608&nbsp;867&nbsp;232</a>.</p>
-          <div id="bookeo_position"></div>
-          <!-- Bookeo se načítá asynchronně, aby pomalá odpověď jeho serveru nezastavila zbytek stránky -->
-          <script async src="https://bookeo.com/widget.js?a=42552ELM9K9198556A4979&amp;agc=false"></script>
+          <!-- Rozvrh z rezervačního systému Café Pilates. Skript vloží rámeček s rozvrhem a sám mu
+               dorovnává výšku; data-site je veřejný klíč webu z Administrace → Embedy. -->
+          <script async src="https://cafepilates-rezervace.vercel.app/embed.js" data-site="VmfZkVVyg5BC" data-height="900"></script>
         </div>
       </div>
     </section>
