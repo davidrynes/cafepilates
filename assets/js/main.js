@@ -71,6 +71,7 @@
   each($$("[data-rozvrh]"), function (box) {
     var api = (box.getAttribute("data-api") || "").replace(/\/$/, "");
     var site = box.getAttribute("data-site") || "";
+    var poradiSalu = (box.getAttribute("data-saly") || "").split(",").map(function (x) { return x.trim(); });
     var dnes = plusDny(new Date(), 0);
     var stav = { tyden: 0, den: 0, sal: "vse", typ: "vse" };
     var data = null;       // poslední načtená odpověď pro zobrazený týden
@@ -150,10 +151,10 @@
       var dny = [0, 1, 2, 3, 4, 5, 6].map(function (i) { return plusDny(od, i); });
       var lekce = data ? data.sessions : [];
       var saly = data ? data.gyms.slice() : [];
-      // Sál s více lekcemi (velký sál) první, jako na nástěnce ve studiu.
+      // Pořadí sálů podle data-saly (názvy oddělené čárkou); neuvedené sály až za nimi.
       saly.sort(function (a, b) {
-        function pocet(g) { return lekce.filter(function (l) { return l.gymId === g.id; }).length; }
-        return pocet(b) - pocet(a);
+        function poradi(g) { var i = poradiSalu.indexOf(g.name); return i === -1 ? 99 : i; }
+        return poradi(a) - poradi(b);
       });
 
       elWeekLabel.textContent = stav.tyden === 0
