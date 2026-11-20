@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;display=swap">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>document.documentElement.classList.add("js");</script>
-  <script src="assets/js/rozvrh.js" defer></script>
+  <script src="assets/js/lektorky.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </head>
 <body>
@@ -71,15 +71,17 @@
             <p class="eyebrow"><span class="num">01</span> Rozvrh</p>
             <h2>Rozvrh <em>lekcí</em></h2>
           </div>
-          <p class="lead">Vyberte den, sál nebo typ lekce. Tlačítkem Rezervovat přejdete do rezervačního systému, kliknutím na jméno na profil lektorky.</p>
+          <p class="lead">Vyberte den, sál nebo typ lekce. U&nbsp;každé lekce vidíte volná místa a&nbsp;cenu, tlačítkem Rezervovat přejdete rovnou na lekci v&nbsp;rezervačním systému. Kliknutím na jméno se dostanete na profil lektorky.</p>
         </div>
 
-        <div class="timetable" data-rozvrh>
-          <noscript><p>Rozvrh se zobrazí po zapnutí JavaScriptu. Aktuální lekce najdete také v&nbsp;rezervačním systému níže.</p></noscript>
+        <!-- Rozvrh se načítá z rezervačního systému (data-api) pod veřejným klíčem webu (data-site),
+             vykresluje ho assets/js/main.js. Odkazy ze jmen na profily lektorek: assets/js/lektorky.js. -->
+        <div class="timetable" data-rozvrh data-api="https://cafepilates-rezervace.vercel.app" data-site="VmfZkVVyg5BC">
+          <noscript><p>Rozvrh se zobrazí po zapnutí JavaScriptu. Aktuální lekce najdete také přímo v&nbsp;<a href="https://cafepilates-rezervace.vercel.app/calendar">rezervačním systému</a>.</p></noscript>
         </div>
 
         <div class="tt-notes">
-          <p>Pravidelný týdenní rozvrh. Kde jsou uvedena dvě jména, lektorky se v&nbsp;termínu střídají. Přesné obsazení konkrétního dne, volná místa i&nbsp;případné změny najdete vždy v&nbsp;<a href="#rezervace">rezervačním systému</a>.</p>
+          <p>Rozvrh, volná místa i&nbsp;ceny jsou aktuální z&nbsp;rezervačního systému. Když lekci výjimečně vede jiná lektorka, uvidíte to u&nbsp;jména. Místo si definitivně držíte až po dokončení rezervace.</p>
           <p>Ve studiu s&nbsp;reformery jsou dva stroje Pilates Reformer a&nbsp;dvě Pilates židle. Na lekci se objednáte v&nbsp;rezervačním systému. Soukromou hodinu mimo rozvrh si domluvíte telefonicky nebo e-mailem.</p>
         </div>
       </div>
@@ -92,14 +94,19 @@
             <p class="eyebrow"><span class="num">02</span> Rezervace</p>
             <h2>Rezervujte si <em>místo</em></h2>
           </div>
-          <p class="lead">Vyberte si lekci, vytvořte si profil a&nbsp;zaplaťte kartou. Na každou lekci si můžete rezervovat jedno místo.</p>
+          <p class="lead">Rezervace i&nbsp;platba probíhají v&nbsp;našem rezervačním systému. Svoje rezervace, kredity a&nbsp;členství tam máte pohromadě.</p>
         </div>
-        <div class="booking">
-          <p class="booking__loading muted">Načítám rezervační systém… Pokud se nezobrazí, zavolejte nám na <a href="tel:+420608867232">+420&nbsp;608&nbsp;867&nbsp;232</a>.</p>
-          <!-- Rozvrh z rezervačního systému Café Pilates. Skript vloží rámeček s rozvrhem a sám mu
-               dorovnává výšku; data-site je veřejný klíč webu z Administrace → Embedy. -->
-          <script async src="https://cafepilates-rezervace.vercel.app/embed.js" data-site="VmfZkVVyg5BC" data-height="900"></script>
+        <ol class="steps">
+          <li><b>Vyberte lekci</b><span>V&nbsp;<a href="#rozvrh">rozvrhu</a> výše klikněte u&nbsp;lekce na Rezervovat – otevře se rovnou v&nbsp;rezervačním systému.</span></li>
+          <li><b>Přihlaste se</b><span>Účet si poprvé zdarma vytvoříte během minuty. Po přihlášení se vrátíte na vybranou lekci.</span></li>
+          <li><b>Zaplaťte</b><span>Kartou, kredity z&nbsp;permanentky nebo v&nbsp;rámci členství. Rezervaci pak najdete v&nbsp;sekci Moje rezervace.</span></li>
+        </ol>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="https://cafepilates-rezervace.vercel.app/signup">Vytvořit účet</a>
+          <a class="btn btn--ghost" href="https://cafepilates-rezervace.vercel.app/login">Přihlásit se</a>
+          <a class="btn btn--ghost" href="https://cafepilates-rezervace.vercel.app/bookings">Moje rezervace</a>
         </div>
+        <p class="muted steps__note">Potřebujete poradit nebo rezervaci zrušit po lhůtě? Zavolejte nám na <a href="tel:+420608867232">+420&nbsp;608&nbsp;867&nbsp;232</a>.</p>
       </div>
     </section>
 

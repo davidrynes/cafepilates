@@ -33,7 +33,7 @@ Adresy fungují i bez `.html` – Netlify servíruje `menu.html` i na `/menu`.
 
 ## Časté úpravy
 
-**Rozvrh** – jen v souboru `assets/js/rozvrh.js`. Každá lekce je jeden řádek; postup je popsaný na začátku souboru. Z těchto dat se vykresluje rozvrh na stránce Rozvrh a ceník; `profil: "id-lektorky"` udělá ze jména odkaz na profil lektorky.
+**Rozvrh** – lekce, časy, volná místa a ceny se načítají živě z rezervačního systému a upravují se v jeho administraci. Na webu je jen `assets/js/lektorky.js`: které jméno lektorky v rozvrhu má odkazovat na který profil na stránce Instruktorky. Adresa rezervačního systému a veřejný klíč webu jsou v `rozvrh-a-cenik.html` (atributy `data-api` a `data-site`, plus odkazy v sekci Rezervace) – při přechodu na ostrou doménu je potřeba je změnit.
 
 **Oznámení nahoře** – v `index.html` blok `<div class="announce">…</div>`. Když není co oznamovat, celý blok smažte.
 

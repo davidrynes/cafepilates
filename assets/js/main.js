@@ -29,36 +29,14 @@
     });
   }
 
-  /* --- Rozvrh ----------------------------------------------------------- */
-  var DNY = ["po", "ut", "st", "ct", "pa", "so", "ne"];
-  var DNY_NAZEV = { po: "Pondělí", ut: "Úterý", st: "Středa", ct: "Čtvrtek", pa: "Pátek", so: "Sobota", ne: "Neděle" };
-  var DNY_ZKR = { po: "Po", ut: "Út", st: "St", ct: "Čt", pa: "Pá", so: "So", ne: "Ne" };
-  var SALY = { velky: "velký sál", reformery: "studio s reformery" };
-  var rozvrh = window.ROZVRH || [];
+  /* --- Rozvrh (živá data z rezervačního systému) ------------------------ */
+  // <div class="timetable" data-rozvrh data-api="https://…" data-site="klíč"></div>
+  // Lekce, volná místa a ceny se načítají z rezervačního systému. Tlačítko
+  // Rezervovat vede přímo na danou lekci v rezervačním systému.
+  var DNY_ZKR = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So"];
+  var DNY_NAZEV = ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota"];
+  var PROFILY = window.LEKTORKY_PROFILY || {};
 
-  function minuty(cas) {
-    var p = String(cas).split(":");
-    return parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10);
-  }
-  function serad(a, b) {
-    return DNY.indexOf(a.den) - DNY.indexOf(b.den) || minuty(a.cas) - minuty(b.cas);
-  }
-  var dnes = DNY[(new Date().getDay() + 6) % 7];
-
-  // Profil může být jedno id, nebo seznam, když se lektorky střídají ("Eva / Helena")
-  function profily(l) {
-    return Array.isArray(l.profil) ? l.profil : [l.profil || null];
-  }
-  function lektorkyHtml(l) {
-    var jmena = String(l.lektorka).split(" / ");
-    var ids = profily(l);
-    return jmena.map(function (jm, i) {
-      var id = ids.length === jmena.length ? ids[i] : ids[0];
-      return id ? '<a href="instruktorky.html#' + esc(id) + '">' + esc(jm) + "</a>" : esc(jm);
-    }).join(" / ");
-  }
-
-  // Interaktivní rozvrh: <div class="timetable" data-rozvrh></div>
   // Typ lekce se pozná z názvu; podle typu se lekce barevně odliší a dá se podle něj filtrovat.
   var TYPY = [
     { id: "pilates", nazev: "Pilates", test: /pilates level|spine corrector|sm systém/i },
@@ -69,96 +47,199 @@
     { id: "chair", nazev: "Chair", test: /chair/i },
     { id: "jine", nazev: "Další", test: null }
   ];
-  var SALY_NAZEV = { velky: "Velký sál", reformery: "Studio s reformery" };
 
   function typyLekce(l) {
-    var t = TYPY.filter(function (t) { return t.test && t.test.test(l.lekce); }).map(function (t) { return t.id; });
+    var t = TYPY.filter(function (t) { return t.test && t.test.test(l.classType); }).map(function (t) { return t.id; });
     return t.length ? t : ["jine"];
   }
-  function lekciText(n) {
-    if (n === 1) return "lekce";
-    if (n >= 2 && n <= 4) return "lekce";
-    return "lekcí";
+  function lekciText(n) { return n >= 1 && n <= 4 ? "lekce" : "lekcí"; }
+  function mistaText(n) {
+    if (n === 1) return "1 volné místo";
+    if (n >= 2 && n <= 4) return n + " volná místa";
+    return n + " volných míst";
+  }
+  function cena(kc) { return String(kc).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " Kč"; }
+  function dvoj(n) { return (n < 10 ? "0" : "") + n; }
+  function ymd(d) { return d.getFullYear() + "-" + dvoj(d.getMonth() + 1) + "-" + dvoj(d.getDate()); }
+  function plusDny(d, n) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; }
+  function kratceDatum(d) { return d.getDate() + ". " + (d.getMonth() + 1) + "."; }
+  function lektorka(jmeno) {
+    var id = PROFILY[jmeno];
+    return id ? '<a href="instruktorky.html#' + esc(id) + '">' + esc(jmeno) + "</a>" : esc(jmeno);
   }
 
   each($$("[data-rozvrh]"), function (box) {
-    var stav = { den: dnes, sal: "vse", typ: "vse" };
-    var pritomne = TYPY.filter(function (t) {
-      return rozvrh.some(function (l) { return typyLekce(l).indexOf(t.id) !== -1; });
-    });
+    var api = (box.getAttribute("data-api") || "").replace(/\/$/, "");
+    var site = box.getAttribute("data-site") || "";
+    var dnes = plusDny(new Date(), 0);
+    var stav = { tyden: 0, den: 0, sal: "vse", typ: "vse" };
+    var data = null;       // poslední načtená odpověď pro zobrazený týden
+    var nacteno = 0;       // kdy (ms), kvůli obnově po návratu na stránku
+    var pozadavek = 0;     // pořadí požadavků – starší odpověď nepřepíše novější
+
     box.innerHTML =
-      '<div class="tt-days" role="group" aria-label="Den v týdnu"></div>' +
+      '<div class="tt-week">' +
+        '<button type="button" class="tt-week__btn" data-tyden="-1" aria-label="Předchozí týden">‹</button>' +
+        '<span class="tt-week__label"></span>' +
+        '<button type="button" class="tt-week__btn" data-tyden="1" aria-label="Další týden">›</button>' +
+      "</div>" +
+      '<div class="tt-days" role="group" aria-label="Den"></div>' +
       '<div class="tt-bar">' +
         '<div class="tt-seg" role="group" aria-label="Sál"></div>' +
         '<div class="tt-types" role="group" aria-label="Typ lekce"></div>' +
       "</div>" +
-      '<div class="tt-cols" aria-live="polite"></div>';
+      '<div class="tt-cols" aria-live="polite"><p class="tt-empty">Načítám rozvrh…</p></div>';
+    var elWeekLabel = $(".tt-week__label", box);
+    var elPrev = $('[data-tyden="-1"]', box);
     var elDays = $(".tt-days", box);
     var elSeg = $(".tt-seg", box);
     var elTypes = $(".tt-types", box);
     var elCols = $(".tt-cols", box);
 
+    function zacatekTydne() { return plusDny(dnes, 7 * stav.tyden); }
+
+    function nacti(tiche) {
+      var id = ++pozadavek;
+      var od = zacatekTydne();
+      if (!tiche) {
+        data = null;
+        vykresli();
+      }
+      var url = api + "/api/public/rozvrh?site=" + encodeURIComponent(site) + "&from=" + ymd(od) + "&days=7";
+      fetch(url)
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (json) {
+          if (id !== pozadavek) return;
+          data = json;
+          nacteno = Date.now();
+          vykresli();
+        })
+        .catch(function () {
+          if (id !== pozadavek || (tiche && data)) return;
+          elCols.className = "tt-cols tt-cols--one";
+          elCols.innerHTML = '<p class="tt-empty">Rozvrh se teď nepodařilo načíst. Zkuste stránku obnovit, ' +
+            'nebo se podívejte přímo do <a href="' + esc(api) + '/calendar">rezervačního systému</a>.</p>';
+        });
+    }
+
     function vyhovuje(l) {
-      return (stav.sal === "vse" || l.sal === stav.sal) &&
+      return (stav.sal === "vse" || l.gymId === stav.sal) &&
         (stav.typ === "vse" || typyLekce(l).indexOf(stav.typ) !== -1);
     }
 
     function radek(l) {
-      return '<li class="tt-row tt-c-' + typyLekce(l)[0] + '">' +
-        "<time>" + esc(l.cas) + "</time>" +
-        '<div class="tt-main"><span class="tt-name">' + esc(l.lekce) + "</span>" +
-        '<span class="tt-who">' + lektorkyHtml(l) + "</span></div>" +
-        '<a class="tt-book" href="#rezervace">Rezervovat</a></li>';
+      var kdo = lektorka(l.instructor) +
+        (l.regularInstructor ? ' <span class="tt-sub">(záskok, obvykle ' + esc(l.regularInstructor) + ")</span>" : "");
+      var plno = l.free <= 0;
+      var meta = l.started ? "" :
+        '<span class="tt-meta"><span class="tt-free' + (plno ? " tt-free--full" : l.free <= 2 ? " tt-free--low" : "") + '">' +
+          (plno ? "obsazeno" : mistaText(l.free)) + "</span> · " + cena(l.priceCzk) + "</span>";
+      var akce = l.started
+        ? '<span class="tt-done">Proběhla</span>'
+        : plno
+          ? '<a class="tt-book tt-book--wait" href="' + esc(l.bookUrl) + '">Čekací listina</a>'
+          : '<a class="tt-book" href="' + esc(l.bookUrl) + '">Rezervovat</a>';
+      return '<li class="tt-row tt-c-' + typyLekce(l)[0] + (l.started ? " is-past" : "") + '">' +
+        "<time>" + esc(l.time) + "</time>" +
+        '<div class="tt-main"><span class="tt-name">' + esc(l.classType) + "</span>" +
+        '<span class="tt-who">' + kdo + "</span>" + meta + "</div>" + akce + "</li>";
     }
 
     function vykresli() {
-      elDays.innerHTML = DNY.map(function (d) {
-        var n = rozvrh.filter(function (l) { return l.den === d && vyhovuje(l); }).length;
-        return '<button type="button" class="tt-day' + (d === dnes ? " is-today" : "") + '" data-den="' + d +
-          '" aria-pressed="' + (d === stav.den) + '" aria-label="' + DNY_NAZEV[d] + (d === dnes ? " (dnes)" : "") + ", " + n + " " + lekciText(n) + '">' +
-          '<b class="tt-day__short">' + DNY_ZKR[d] + "</b>" +
-          '<b class="tt-day__full">' + DNY_NAZEV[d] + "</b>" +
-          '<small><span class="tt-day__n">' + n + '</span><span class="tt-day__l"> ' + lekciText(n) + (d === dnes ? " · dnes" : "") + "</span></small>" +
+      var od = zacatekTydne();
+      var dny = [0, 1, 2, 3, 4, 5, 6].map(function (i) { return plusDny(od, i); });
+      var lekce = data ? data.sessions : [];
+      var saly = data ? data.gyms.slice() : [];
+      // Sál s více lekcemi (velký sál) první, jako na nástěnce ve studiu.
+      saly.sort(function (a, b) {
+        function pocet(g) { return lekce.filter(function (l) { return l.gymId === g.id; }).length; }
+        return pocet(b) - pocet(a);
+      });
+
+      elWeekLabel.textContent = stav.tyden === 0
+        ? "Tento týden · " + kratceDatum(dny[0]) + " – " + kratceDatum(dny[6])
+        : kratceDatum(dny[0]) + " – " + kratceDatum(dny[6]);
+      elPrev.disabled = stav.tyden === 0;
+
+      elDays.innerHTML = dny.map(function (d, i) {
+        var den = ymd(d);
+        var n = lekce.filter(function (l) { return l.date === den && vyhovuje(l); }).length;
+        var jeDnes = stav.tyden === 0 && i === 0;
+        var jmeno = jeDnes ? "Dnes" : stav.tyden === 0 && i === 1 ? "Zítra" : DNY_NAZEV[d.getDay()];
+        return '<button type="button" class="tt-day' + (jeDnes ? " is-today" : "") + '" data-den="' + i +
+          '" aria-pressed="' + (i === stav.den) + '" aria-label="' + DNY_NAZEV[d.getDay()] + " " + kratceDatum(d) + (data ? ", " + n + " " + lekciText(n) : "") + '">' +
+          '<b class="tt-day__short">' + DNY_ZKR[d.getDay()] + "</b>" +
+          '<b class="tt-day__full">' + jmeno + "</b>" +
+          '<small><span class="tt-day__date">' + kratceDatum(d) + "</span>" +
+          (data ? '<span class="tt-day__l"> · ' + n + " " + lekciText(n) + "</span>" : "") + "</small>" +
           "</button>";
       }).join("");
 
-      elSeg.innerHTML = [["vse", "Oba sály"], ["velky", "Velký sál"], ["reformery", "Reformery"]].map(function (o) {
-        return '<button type="button" data-sal="' + o[0] + '" aria-pressed="' + (stav.sal === o[0]) + '">' + o[1] + "</button>";
-      }).join("");
+      elSeg.innerHTML = saly.length > 1
+        ? [["vse", saly.length === 2 ? "Oba sály" : "Všechny sály"]].concat(saly.map(function (g) { return [g.id, g.name]; }))
+            .map(function (o) {
+              return '<button type="button" data-sal="' + esc(o[0]) + '" aria-pressed="' + (stav.sal === o[0]) + '">' + esc(o[1]) + "</button>";
+            }).join("")
+        : "";
 
-      elTypes.innerHTML = ['<button type="button" class="chip" data-typ="vse" aria-pressed="' + (stav.typ === "vse") + '">Všechny lekce</button>']
-        .concat(pritomne.map(function (t) {
-          return '<button type="button" class="chip tt-chip tt-c-' + t.id + '" data-typ="' + t.id + '" aria-pressed="' + (stav.typ === t.id) + '">' + t.nazev + "</button>";
-        })).join("");
+      var pritomne = TYPY.filter(function (t) {
+        return lekce.some(function (l) { return typyLekce(l).indexOf(t.id) !== -1; });
+      });
+      elTypes.innerHTML = pritomne.length > 1
+        ? ['<button type="button" class="chip" data-typ="vse" aria-pressed="' + (stav.typ === "vse") + '">Všechny lekce</button>']
+            .concat(pritomne.map(function (t) {
+              return '<button type="button" class="chip tt-chip tt-c-' + t.id + '" data-typ="' + t.id + '" aria-pressed="' + (stav.typ === t.id) + '">' + t.nazev + "</button>";
+            })).join("")
+        : "";
 
-      var saly = stav.sal === "vse" ? ["velky", "reformery"] : [stav.sal];
+      if (!data) {
+        elCols.className = "tt-cols tt-cols--one";
+        elCols.innerHTML = '<p class="tt-empty">Načítám rozvrh…</p>';
+        return;
+      }
+
+      var vybraneSaly = stav.sal === "vse" ? saly : saly.filter(function (g) { return g.id === stav.sal; });
       // sál, kde se vybraný typ lekce za celý týden vůbec nekoná, nezobrazovat
       if (stav.typ !== "vse") {
-        var sTypem = saly.filter(function (sal) {
-          return rozvrh.some(function (l) { return l.sal === sal && typyLekce(l).indexOf(stav.typ) !== -1; });
+        var sTypem = vybraneSaly.filter(function (g) {
+          return lekce.some(function (l) { return l.gymId === g.id && typyLekce(l).indexOf(stav.typ) !== -1; });
         });
-        if (sTypem.length) saly = sTypem;
+        if (sTypem.length) vybraneSaly = sTypem;
       }
-      elCols.className = "tt-cols" + (saly.length === 1 ? " tt-cols--one" : "");
-      elCols.innerHTML = saly.map(function (sal) {
-        var lekce = rozvrh.filter(function (l) { return l.den === stav.den && l.sal === sal && vyhovuje(l); }).sort(serad);
-        var obsah = lekce.length
-          ? '<ol class="tt-list">' + lekce.map(radek).join("") + "</ol>"
-          : '<p class="tt-empty">' + DNY_NAZEV[stav.den] + ": podle vybraného filtru tu žádná lekce není.</p>";
-        return '<section class="tt-col"><h3>' + SALY_NAZEV[sal] + "<small>" + DNY_NAZEV[stav.den] + "</small></h3>" + obsah + "</section>";
+      var den = dny[stav.den];
+      var denText = DNY_NAZEV[den.getDay()] + " " + kratceDatum(den);
+      elCols.className = "tt-cols" + (vybraneSaly.length === 1 ? " tt-cols--one" : "");
+      elCols.innerHTML = vybraneSaly.map(function (g) {
+        var dnesni = lekce.filter(function (l) { return l.date === ymd(den) && l.gymId === g.id && vyhovuje(l); });
+        var obsah = dnesni.length
+          ? '<ol class="tt-list">' + dnesni.map(radek).join("") + "</ol>"
+          : '<p class="tt-empty">' + denText + ": podle vybraného filtru tu žádná lekce není.</p>";
+        return '<section class="tt-col"><h3>' + esc(g.name) + "<small>" + denText + "</small></h3>" + obsah + "</section>";
       }).join("");
     }
 
     box.addEventListener("click", function (e) {
       var b = e.target.closest("button");
-      if (!b || !box.contains(b)) return;
-      if (b.hasAttribute("data-den")) stav.den = b.getAttribute("data-den");
+      if (!b || !box.contains(b) || b.disabled) return;
+      if (b.hasAttribute("data-tyden")) {
+        stav.tyden = Math.max(0, stav.tyden + parseInt(b.getAttribute("data-tyden"), 10));
+        stav.den = 0;
+        nacti(false);
+        return;
+      }
+      if (b.hasAttribute("data-den")) stav.den = parseInt(b.getAttribute("data-den"), 10);
       else if (b.hasAttribute("data-sal")) stav.sal = b.getAttribute("data-sal");
       else if (b.hasAttribute("data-typ")) stav.typ = b.getAttribute("data-typ");
       else return;
       vykresli();
     });
-    vykresli();
+
+    // Po návratu na stránku (třeba z rezervace v jiné záložce) obnovit volná místa.
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible" && Date.now() - nacteno > 60000) nacti(true);
+    });
+
+    nacti(false);
   });
 
   /* --- Instruktorky: filtr podle typu lekce ----------------------------- */
