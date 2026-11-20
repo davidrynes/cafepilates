@@ -20,7 +20,7 @@ Adresy fungují i bez `.html` – Netlify servíruje `menu.html` i na `/menu`.
 | `menu.html` | Jídelní a nápojový lístek |
 | `pilates.html` | Co je pilates, pro koho je, historie |
 | `instruktorky.html` | Lektorky – hlavní tým a další lektorky |
-| `rozvrh-a-cenik.html` | Rozvrh, rezervace (Bookeo), ceník, storno podmínky |
+| `rozvrh-a-cenik.html` | Rozvrh, rezervace (vlastní rezervační systém), ceník, storno podmínky |
 | `oslavy.html` | Oslavy a nabídka občerstvení |
 | `vystavy.html` | Vernisáže a výstavy |
 | `kontakt.html` | Kontakt, mapa, fakturační údaje |
@@ -55,5 +55,5 @@ Ostatní obrázky obrazovky jsou ve stejné složce a jejich pořadí je v `obra
 ## Technické poznámky
 
 - Písma: Panchang je uložený ve webu (`assets/fonts/`), DM Sans se načítá z Google Fonts.
-- Mapa na stránce Kontakt se načte až po kliknutí (bez cookies Googlu předem). Web sám nepoužívá analytiku ani sledovací cookies, proto nemá cookie lištu. Rezervační systém na stránce Rozvrh je vložený z bookeo.com.
+- Mapa na stránce Kontakt se načte až po kliknutí (bez cookies Googlu předem). Web sám nepoužívá analytiku ani sledovací cookies, proto nemá cookie lištu. Rezervační systém na stránce Rozvrh je vložený z vlastního rezervačního systému Café Pilates (`embed.js`); cookie nastavuje jen po přihlášení, a to nezbytnou přihlašovací.
 - Styly: `assets/css/styles.css`, barvy jsou na začátku souboru v `:root`.
