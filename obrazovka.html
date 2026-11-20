@@ -19,6 +19,7 @@
       opacity: 0;
       -webkit-transition: opacity 5s ease;
       transition: opacity 5s ease;
+      will-change: opacity;
     }
     .slides img.is-active { opacity: 1; }
   </style>
@@ -26,18 +27,17 @@
 <body>
   <!--
     OBRAZOVKA V KAVÁRNĚ
-    Obrázky jsou na výšku v poměru 9 : 16 (např. 1080 × 1920 nebo 2160 × 3840 px).
-    Každý se ukazuje 8 sekund, prolnutí do dalšího trvá 5 sekund.
+    Obsah se spravuje v redakčním systému Sanity (studio Café Pilates → „Obrazovka v kavárně“):
+    polévky tohoto týdne, další obrázky v libovolném pořadí, vypnutí obrázku nebo jeho omezení
+    na období od–do a délka zobrazení. Po uložení („Publish“) se změna na televizi projeví
+    do pěti minut, stránku není potřeba obnovovat.
 
-    POLÉVKY KAŽDÝ TÝDEN: na GitHubu otevřete složku assets/img/obrazovka/, nahrajte nový obrázek
-    pojmenovaný přesně „polevky.jpg“ (přepíše starý) a uložte. Obrazovka si ho sama načte do 30 minut,
-    tento soubor není potřeba upravovat.
-
-    Další obrázky: nahrajte je do složky assets/img/obrazovka/ a přidejte níže řádek <img>.
-    Odebrání: smažte jeho řádek. Pořadí řádků = pořadí na obrazovce.
+    Obrázky níže jsou jen záloha pro případ, že by Sanity nebylo dostupné (výpadek internetu
+    při prvním načtení). Dokud se obsah ze Sanity jednou načte, zůstává na obrazovce i při
+    pozdějších výpadcích.
   -->
-  <div class="slides">
-    <img id="polevky" src="/assets/img/obrazovka/polevky.jpg" alt="">
+  <div class="slides" id="slides">
+    <img src="/assets/img/obrazovka/polevky.jpg" alt="">
     <img src="/assets/img/obrazovka/tv-menu-01.png" alt="">
     <img src="/assets/img/obrazovka/tv-menu-02.png" alt="">
     <img src="/assets/img/obrazovka/tv-menu-03.png" alt="">
@@ -57,56 +57,141 @@
   </div>
 
   <script>
+    // Psáno bez moderní syntaxe – prohlížeče v televizích bývají staré.
     (function () {
-      var PRODLEVA = 8000;                    // ms mezi obrázky (stejně jako dřív ve Webflow)
-      var KONTROLA_POLEVEK = 30 * 60 * 1000;  // jak často zjistit, jestli nejsou nové polévky
-      var OBNOVA_STRANKY = 12 * 60 * 60 * 1000; // jednou za 12 h načíst stránku znovu (nové slajdy)
-      var POLEVKY = "/assets/img/obrazovka/polevky.jpg";
+      var SANITY = "https://ija35k0i.apicdn.sanity.io/v2025-02-19/data/query/production";
+      var DOTAZ = '*[_id == "obrazovka"][0]{sekundNaObrazek, sekundPrelinani,' +
+        ' "polevky": polevky.asset->url,' +
+        ' "slides": slides[zobrazovat != false]{od, do, "url": obrazek.asset->url}}';
+      var KONTROLA_OBSAHU = 5 * 60 * 1000;        // jak často se podívat, jestli se v Sanity něco nezměnilo
+      var OBNOVA_STRANKY = 12 * 60 * 60 * 1000;   // jednou za 12 h načíst stránku znovu
 
-      var slides = document.querySelectorAll(".slides img");
+      var kontejner = document.getElementById("slides");
+      var slides = [].slice.call(kontejner.getElementsByTagName("img"));
+      var prodleva = 8000;
+      var prelinani = 5000;
       var i = 0;
-      if (slides.length) {
-        slides[0].className = "is-active";
-        if (slides.length > 1) {
-          setInterval(function () {
-            slides[i].className = "";
-            i = (i + 1) % slides.length;
-            slides[i].className = "is-active";
-          }, PRODLEVA);
+      var casovac = null;
+      var cekajici = null;   // nová sada obrázků, už stažená, čeká na další přechod
+      var verze = null;      // podpis toho, co se právě promítá
+
+      function nastavPrelinani(img) {
+        img.style.webkitTransition = img.style.transition = "opacity " + prelinani / 1000 + "s ease";
+      }
+
+      function dalsi() {
+        var stary = slides[i];
+        if (cekajici) {
+          // Vyměnit celou sadu: první nový obrázek se prolne přes ten právě promítaný,
+          // staré se uklidí, až prolnutí doběhne.
+          var odchazejici = slides;
+          slides = cekajici;
+          cekajici = null;
+          i = 0;
+          slides[0].className = "is-active";
+          stary.className = "";
+          setTimeout(function () {
+            for (var k = 0; k < odchazejici.length; k++) {
+              if (odchazejici[k].parentNode) odchazejici[k].parentNode.removeChild(odchazejici[k]);
+            }
+          }, prelinani + 500);
+          spust();
+          return;
+        }
+        if (slides.length < 2) return;
+        stary.className = "";
+        i = (i + 1) % slides.length;
+        slides[i].className = "is-active";
+      }
+
+      function spust() {
+        if (casovac) clearInterval(casovac);
+        casovac = setInterval(dalsi, prodleva);
+      }
+
+      // Dnešní datum v místním čase jako "RRRR-MM-DD", aby šlo porovnat s poli od/do.
+      function dnes() {
+        var d = new Date();
+        function dve(n) { return (n < 10 ? "0" : "") + n; }
+        return d.getFullYear() + "-" + dve(d.getMonth() + 1) + "-" + dve(d.getDate());
+      }
+
+      // Šířka obrázku, kterou si říct Sanity – podle skutečné obrazovky, nejvýš 2160 px.
+      function sirka() {
+        var w = Math.round((window.innerWidth || 1080) * (window.devicePixelRatio || 1));
+        return Math.max(720, Math.min(2160, w));
+      }
+
+      function adresa(url) {
+        return url + "?w=" + sirka() + "&fm=jpg&q=85";
+      }
+
+      function prijmi(data) {
+        if (!data || !data.polevky) return;
+        var den = dnes();
+        var adresy = [adresa(data.polevky)];
+        var seznam = data.slides || [];
+        for (var k = 0; k < seznam.length; k++) {
+          var s = seznam[k];
+          if (!s.url) continue;
+          if (s.od && s.od > den) continue;
+          if (s["do"] && s["do"] < den) continue;
+          adresy.push(adresa(s.url));
+        }
+        var novaProdleva = (data.sekundNaObrazek || 8) * 1000;
+        var novePrelinani = Math.min((data.sekundPrelinani || 0) * 1000, novaProdleva - 1000);
+        var podpis = adresy.join("|") + "|" + novaProdleva + "|" + novePrelinani;
+        if (podpis === verze) return;
+
+        // Nejdřív všechno stáhnout, teprve pak ukázat – při pomalém internetu
+        // by se jinak na televizi objevil prázdný černý obrázek.
+        var nove = [];
+        var zbyva = adresy.length;
+        function hotovo() {
+          if (--zbyva > 0) return;
+          var nactene = [];
+          for (var m = 0; m < nove.length; m++) if (nove[m].naturalWidth) nactene.push(nove[m]);
+          if (!nactene.length) return;
+          verze = podpis;
+          prodleva = novaProdleva;
+          prelinani = Math.max(0, novePrelinani);
+          for (var n = 0; n < nactene.length; n++) {
+            nastavPrelinani(nactene[n]);
+            kontejner.appendChild(nactene[n]);
+          }
+          for (var o = 0; o < slides.length; o++) nastavPrelinani(slides[o]);
+          cekajici = nactene;
+        }
+        for (var j = 0; j < adresy.length; j++) {
+          var img = new Image();
+          img.alt = "";
+          img.onload = img.onerror = hotovo;
+          img.src = adresy[j];
+          nove.push(img);
         }
       }
 
-      function hlavicka(url, hotovo) {
+      function nactiObsah() {
         var xhr = new XMLHttpRequest();
-        xhr.open("HEAD", url + (url.indexOf("?") === -1 ? "?" : "&") + "kontrola=" + new Date().getTime(), true);
-        xhr.onload = function () { if (xhr.status === 200) hotovo(xhr); };
+        xhr.open("GET", SANITY + "?query=" + encodeURIComponent(DOTAZ), true);
+        xhr.onload = function () {
+          if (xhr.status !== 200) return;
+          try { prijmi(JSON.parse(xhr.responseText).result); } catch (e) { /* zůstane, co běží */ }
+        };
         xhr.send();
       }
 
-      // Nový obrázek polévek se vymění, až se na serveru opravdu změní (podle ETag),
-      // a teprve když se celý stáhne – při výpadku internetu zůstane starý.
-      var soup = document.getElementById("polevky");
-      var verze = null;
-      function zkontrolujPolevky() {
-        hlavicka(POLEVKY, function (xhr) {
-          var tag = xhr.getResponseHeader("ETag") || xhr.getResponseHeader("Last-Modified");
-          if (!tag) return;
-          if (verze === null) { verze = tag; return; }
-          if (tag === verze) return;
-          var url = POLEVKY + "?v=" + encodeURIComponent(tag);
-          var nacitany = new Image();
-          nacitany.onload = function () { soup.src = url; verze = tag; };
-          nacitany.src = url;
-        });
-      }
-      if (soup) {
-        zkontrolujPolevky();
-        setInterval(zkontrolujPolevky, KONTROLA_POLEVEK);
-      }
+      if (slides.length) slides[0].className = "is-active";
+      spust();
+      nactiObsah();
+      setInterval(nactiObsah, KONTROLA_OBSAHU);
 
       // Celou stránku obnovit jen tehdy, když je server dostupný (jinak by televize ukázala chybu).
       setInterval(function () {
-        hlavicka(location.pathname, function () { location.reload(); });
+        var xhr = new XMLHttpRequest();
+        xhr.open("HEAD", location.pathname + "?kontrola=" + new Date().getTime(), true);
+        xhr.onload = function () { if (xhr.status === 200) location.reload(); };
+        xhr.send();
       }, OBNOVA_STRANKY);
     })();
   </script>
